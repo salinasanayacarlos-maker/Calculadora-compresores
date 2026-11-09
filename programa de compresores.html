@@ -1,0 +1,255 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Compresión de Gases | FI-UNAM</title>
+  <link rel="stylesheet" href="formato de compresores.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="header-inner">
+    <img class="logo" src="unam.png" alt="Escudo de la UNAM" onerror="this.outerHTML='&lt;div class=&quot;logo-fallback&quot;&gt;UNAM&lt;/div&gt;'">
+    <div class="heading">
+      <h1>Calculadora de Compresión de Gases</h1>
+      <p>Procesos de Bombeo y Compresión de Hidrocarburos · Facultad de Ingeniería</p>
+    </div>
+    <img class="logo" src="fi.png" alt="Logotipo de la Facultad de Ingeniería" onerror="this.outerHTML='&lt;div class=&quot;logo-fallback&quot;&gt;FI · UNAM&lt;/div&gt;'">
+  </div>
+</header>
+
+<main>
+  <section class="intro">
+    <strong>Herramienta académica de cálculo.</strong>
+    <p>Selecciona el tipo de problema, captura los datos y pulsa Resolver. Cada resultado incluye las ecuaciones, sustituciones y operaciones principales. En mezclas, primero se calcula la temperatura final y el trabajo; después se introducen las propiedades termodinámicas para calcular ΔU, Q y ΔS.</p>
+  </section>
+
+  <nav class="tabs" aria-label="Tipos de problema">
+    <button class="tab active" data-tab="simple">Compresión básica</button>
+    <button class="tab" data-tab="etapas">Varias etapas</button>
+    <button class="tab" data-tab="recip">Compresor reciprocante</button>
+    <button class="tab" data-tab="mezclas">Mezclas de gases</button>
+  </nav>
+
+  <section id="simple" class="panel active">
+    <h2>1. Compresión de una etapa</h2>
+    <p class="muted">Modelo de gas ideal. Presiones absolutas. El trabajo y la potencia requeridos por el compresor se reportan positivos.</p>
+
+    <div class="grid">
+      <div class="field"><label for="p1">Presión de succión P₁ (kPa abs)</label><input id="p1" type="number" value="100" step="any"></div>
+      <div class="field"><label for="p2">Presión de descarga P₂ (kPa abs)</label><input id="p2" type="number" value="500" step="any"></div>
+      <div class="field"><label for="t1">Temperatura de succión T₁ (K)</label><input id="t1" type="number" value="300" step="any"></div>
+      <div class="field"><label for="mdot">Flujo másico (kg/s)</label><input id="mdot" type="number" value="0.2" step="any"></div>
+      <div class="field"><label for="process">Tipo de proceso</label><select id="process"><option value="iso">Isotérmico</option><option value="poly" selected>Politrópico</option><option value="adia">Adiabático / isoentrópico ideal</option></select></div>
+      <div class="field" id="nField"><label for="nexp">Exponente politrópico n</label><input id="nexp" type="number" value="1.3" step="any"></div>
+      <div class="field hidden" id="kField"><label for="kexp">Razón de calores específicos k</label><input id="kexp" type="number" value="1.4" step="any"></div>
+      <div class="field"><label for="rgas">Constante específica R (kJ/kg·K)</label><input id="rgas" type="number" value="0.287" step="any"></div>
+      <div class="field"><label for="etas">Eficiencia isoentrópica (%)</label><input id="etas" type="number" value="100" min="1" max="100" step="any"></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn gold" id="solveSimple">Resolver problema</button>
+      <button class="btn light" id="clearSimple">Limpiar</button>
+    </div>
+    <div id="simpleResult" class="result">Ingresa los datos y selecciona “Resolver problema”.</div>
+  </section>
+
+  <section id="etapas" class="panel">
+    <h2>2. Compresión en dos etapas con interenfriamiento</h2>
+    <p class="muted">Se considera interenfriamiento ideal: el gas entra a la segunda etapa a la temperatura inicial. La presión intermedia óptima se obtiene con Pᵢ = √(P₁P₂).</p>
+
+    <div class="grid">
+      <div class="field"><label for="mp1">Presión inicial P₁ (kPa abs)</label><input id="mp1" type="number" value="100" step="any"></div>
+      <div class="field"><label for="mp2">Presión final P₂ (kPa abs)</label><input id="mp2" type="number" value="500" step="any"></div>
+      <div class="field"><label for="mt">Temperatura de entrada T₁ (K)</label><input id="mt" type="number" value="300" step="any"></div>
+      <div class="field"><label for="mn">Exponente politrópico n</label><input id="mn" type="number" value="1.3" step="any"></div>
+      <div class="field"><label for="mr">Constante específica R (kJ/kg·K)</label><input id="mr" type="number" value="0.287" step="any"></div>
+      <div class="field"><label for="mm">Flujo másico (kg/s)</label><input id="mm" type="number" value="0.2" step="any"></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn gold" id="solveStages">Resolver dos etapas</button>
+      <button class="btn light" id="clearStages">Limpiar</button>
+    </div>
+    <div id="stageResult" class="result">La presión intermedia óptima se calcula como Pᵢ = √(P₁·P₂).</div>
+  </section>
+
+  <section id="recip" class="panel">
+    <h2>3. Compresor reciprocante</h2>
+    <p class="muted">Cálculo geométrico y estimación de eficiencia volumétrica, gasto real, flujo másico y potencias. El modelo de doble efecto considera el área del vástago.</p>
+
+    <div class="grid">
+      <div class="field"><label for="dcil">Diámetro del cilindro D (m)</label><input id="dcil" type="number" value="0.10" step="any"></div>
+      <div class="field"><label for="stroke">Carrera S (m)</label><input id="stroke" type="number" value="0.15" step="any"></div>
+      <div class="field"><label for="rpm">Velocidad N (rpm)</label><input id="rpm" type="number" value="300" step="any"></div>
+      <div class="field"><label for="rp1">Presión P₁ (kPa abs)</label><input id="rp1" type="number" value="100" step="any"></div>
+      <div class="field"><label for="rp2">Presión P₂ (kPa abs)</label><input id="rp2" type="number" value="500" step="any"></div>
+      <div class="field"><label for="clearance">Espacio muerto C (%)</label><input id="clearance" type="number" value="5" min="0" step="any"></div>
+      <div class="field"><label for="rn">Exponente politrópico n</label><input id="rn" type="number" value="1.3" step="any"></div>
+      <div class="field"><label for="rod">Diámetro del vástago (m)</label><input id="rod" type="number" value="0.015" step="any"></div>
+      <div class="field"><label for="effect">Configuración</label><select id="effect"><option value="single">Simple efecto</option><option value="double">Doble efecto</option></select></div>
+      <div class="field"><label for="rt">Temperatura de succión (K)</label><input id="rt" type="number" value="290" step="any"></div>
+      <div class="field"><label for="mw">Masa molar del gas (kg/kmol)</label><input id="mw" type="number" value="28.97" step="any"></div>
+      <div class="field"><label for="etaI">Eficiencia indicada (%)</label><input id="etaI" type="number" value="75" min="1" max="100" step="any"></div>
+      <div class="field"><label for="etaM">Eficiencia mecánica (%)</label><input id="etaM" type="number" value="85" min="1" max="100" step="any"></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn gold" id="solveRecip">Calcular reciprocante</button>
+      <button class="btn light" id="clearRecip">Limpiar</button>
+    </div>
+    <div id="recipResult" class="result">Los resultados se mostrarán con el desarrollo de las ecuaciones.</div>
+  </section>
+
+
+<section id="mezclas" class="panel">
+  <h2>4. Compresión de mezclas de gases ideales</h2>
+  <p class="muted">
+    Procedimiento basado en el ejemplo de mezcla de las páginas 68–72 de los apuntes.
+    Primero se calcula la temperatura final y el trabajo de compresión. Posteriormente,
+    se obtienen las propiedades termodinámicas mediante valores exactos o interpolación lineal.
+  </p>
+
+  <div class="note">
+    <strong>Convención de signos:</strong>
+    W es el trabajo realizado por el gas. Durante la compresión será negativo.
+    El trabajo suministrado por el compresor se reporta como Wentrada = −W.
+    El balance utilizado es Q = ΔU + W.
+  </div>
+
+  <h3>4.1 Condiciones del proceso</h3>
+  <div class="grid">
+    <div class="field">
+      <label for="mixP1">Presión inicial P₁ (kPa abs)</label>
+      <input id="mixP1" type="number" value="101.325" step="any">
+    </div>
+    <div class="field">
+      <label for="mixP2">Presión final P₂ (kPa abs)</label>
+      <input id="mixP2" type="number" value="303.975" step="any">
+    </div>
+    <div class="field">
+      <label for="mixT1">Temperatura inicial T₁ (K)</label>
+      <input id="mixT1" type="number" value="300" step="any">
+    </div>
+    <div class="field">
+      <label for="mixN">Exponente politrópico n</label>
+      <input id="mixN" type="number" value="1.25" step="any">
+    </div>
+  </div>
+
+  <h3>4.2 Biblioteca de gases y composición</h3>
+  <p class="muted">
+    Selecciona cada componente de la mezcla, indica su masa y agrega los gases necesarios.
+  </p>
+
+  <div class="table-wrap">
+    <table class="library-table">
+      <thead>
+        <tr><th>Gas</th><th>Fórmula</th><th>M (kg/kmol)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Dióxido de carbono</td><td>CO₂</td><td>44.00</td></tr>
+        <tr><td>Monóxido de carbono</td><td>CO</td><td>28.00</td></tr>
+        <tr><td>Nitrógeno</td><td>N₂</td><td>28.00</td></tr>
+        <tr><td>Oxígeno</td><td>O₂</td><td>32.00</td></tr>
+        <tr><td>Amoniaco</td><td>NH₃</td><td>17.03</td></tr>
+        <tr><td>Vapor de agua</td><td>H₂O</td><td>18.02</td></tr>
+        <tr><td>Metano</td><td>CH₄</td><td>16.04</td></tr>
+        <tr><td>Hidrógeno</td><td>H₂</td><td>2.016</td></tr>
+        <tr><td>Argón</td><td>Ar</td><td>39.95</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="grid">
+    <div class="field">
+      <label for="mixGas">Componente</label>
+      <select id="mixGas"></select>
+    </div>
+    <div class="field">
+      <label for="mixMW">Masa molar M (kg/kmol)</label>
+      <input id="mixMW" type="number" step="any">
+    </div>
+    <div class="field">
+      <label for="mixMass">Masa del componente (kg)</label>
+      <input id="mixMass" type="number" step="any" placeholder="Ej. 0.15">
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn light" id="addComponent">Agregar componente</button>
+  </div>
+
+  <div class="table-wrap">
+    <table id="mixTable">
+      <thead>
+        <tr>
+          <th>Gas</th>
+          <th>M (kg/kmol)</th>
+          <th>Masa (kg)</th>
+          <th>nᵢ (kmol)</th>
+          <th>yᵢ</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="actions">
+    <button class="btn gold" id="solveMixFirst">
+      Calcular T₂ y trabajo
+    </button>
+    <button class="btn light" id="clearMix">
+      Limpiar apartado de mezclas
+    </button>
+  </div>
+
+  <div id="mixFirstResult" class="result">
+    Agrega los componentes y calcula la primera parte del problema.
+  </div>
+
+  <div id="propertySection" class="hidden">
+
+    <h3>4.3 Selección del método para las propiedades termodinámicas</h3>
+
+    <p class="muted">
+      Para cada gas debes obtener cuatro propiedades:
+      u(T₁), u(T₂), s°(T₁) y s°(T₂).
+      Selecciona individualmente si utilizarás el valor exacto de las tablas
+      o la interpolación lineal.
+    </p>
+
+    <div class="note">
+      <strong>Importante:</strong>
+      Si seleccionas valor exacto, introduce directamente el valor que aparece
+      en tus tablas. Si seleccionas interpolación, introduce las dos temperaturas
+      tabuladas que rodean la temperatura solicitada, junto con sus respectivos valores.
+    </div>
+
+    <div id="propertyEntryContainer"></div>
+
+    <div class="actions">
+      <button class="btn gold" id="solveMixSecond">
+        Calcular ΔU, Q y ΔS
+      </button>
+    </div>
+
+    <div id="mixSecondResult" class="result">
+      Selecciona el método y captura las cuatro propiedades para cada componente.
+    </div>
+
+  </div>
+</section>
+</main>
+
+<footer class="site-footer">
+  <strong>Carlos Eduardo Salinas Anaya</strong><br>
+  Ingeniería Petrolera · Facultad de Ingeniería · Universidad Nacional Autónoma de México<br>
+  Procesos de Bombeo y Compresión de Hidrocarburos
+</footer>
+
+<script src="calculos compresore.js"></script>
+</body>
+</html>
